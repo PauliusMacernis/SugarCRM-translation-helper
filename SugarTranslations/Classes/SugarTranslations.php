@@ -711,9 +711,6 @@ namespace SugarTranslations\Classes {
                         . 'VALUES (:variable_name, :variable_type, :variable_value, :variable_file_name, :variable_lang, :variable_depth_serialized)';
                 $q = $pdo_dbh->prepare($q);
                 
-                //$q_data = array();
-                //$pdo_dbh 
-                
                 foreach($data as $variable_name => $variables_info_based_on_languages) {
                     if(!isset($variables_info_based_on_languages) || empty($variables_info_based_on_languages) || !is_array($variables_info_based_on_languages)) {
                         continue;
@@ -732,9 +729,9 @@ namespace SugarTranslations\Classes {
                             }
                             
                             foreach($array_of_VariableInfo as $VariableInfo) {
-
-                                $exists = $this->checkIfTranslationsTableHasSpecificDataRow($table_name, $data, $pdo_dbh, $VariableInfo);
                                 
+                                $exists = $this->checkIfTranslationsTableHasSpecificDataRow($table_name, $data, $pdo_dbh, $VariableInfo);
+                                                                
                                 if(!isset($exists) || ($exists != true)) {
                                     $q->execute(array(
                                         ':variable_name'                => $VariableInfo->variable_name,
@@ -744,73 +741,19 @@ namespace SugarTranslations\Classes {
                                         ':variable_lang'                => $VariableInfo->variable_lang,
                                         ':variable_depth_serialized'=> serialize((array)($VariableInfo->variable_depth)),
                                     ));
-                                    
                                 }
-                                
-                                
                             }
-                            
-                        }
-                        
-                        //var_dump($variables_info_based_on_files); die();
-                        
+                        }                        
                     }
-                    
-                    
                 }
-                
-                
-                /*var_dump($data); die();
-                
-                
-                
-                
-                $q = 
-                   'CREATE TABLE IF NOT EXISTS `' . $this->filterDBTableName($table_name) . '` (
-                            `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                            `variable_name` TEXT NOT NULL               COMMENT :comment_variable_name                  COLLATE :encoding,
-                            `variable_value` TEXT NULL                  COMMENT :comment_variable_value                 COLLATE :encoding,
-                            `variable_language` TINYTEXT NOT NULL       COMMENT :comment_variable_language              COLLATE :encoding,
-                            `variable_file` TEXT NOT NULL               COMMENT :comment_variable_file                  COLLATE :encoding,
-                            `VariableInfoObject_serialized` TEXT NULL   COMMENT :comment_VariableInfoObject_serialized  COLLATE :encoding,
-                            `updated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                            PRIMARY KEY (`id`)
-                    )
-                    COMMENT=:comment
-                    COLLATE=:encoding
-                    ENGINE=InnoDB;';
-                
-                $sth = $pdo_dbh->prepare($q, array(\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY));
-                $result = $sth->execute(array(
-                     ':comment_id' => ''
-                    ,':comment_variable_name' => 'Variable name, aka. variable index, aka. LBL name, e.g. LBL_DESCRIPTION'
-                    ,':comment_variable_value' => 'Variable value, e.g. Label name'
-                    ,':comment_variable_language' => 'Variable language, e.g. en-us'
-                    ,':comment_variable_file' => 'Variable file name, relative to web root'
-                    ,':comment_VariableInfoObject_serialized' => 'Serialized VariableInfo PHP object'
-                    ,':comment' => 'Created by PHP script (' . __FILE__ . ', line:' . __LINE__ . ') at ' . date('Y-m-d H:i:s')
-                    ,':encoding' => 'utf8_unicode_ci'
-                ));
-                */
-                
-                /*
-                $pdo_dbh->query($pdo_dbh->quote($q));
-
-                $pdo_dbh->quote()
-                ' . ($table_name) . '*/
-                // echo queries?
-                //if(($echo_queries) && ($result)) {
-                    //echo $pdo_dbh->quote($q) . "\n<br />";
-                //}
-                
+                                
             } catch (\PDOException $e) {
                 print "Error!: " . $e->getMessage() . "\n<br/>";
                 die();
             }            
             
             return true;
-            
-            
+                        
         }
         
         
@@ -831,10 +774,10 @@ namespace SugarTranslations\Classes {
             $q->bindParam(':variable_value', $VariableInfo->variable_value);
             $q->bindParam(':variable_file_name', $VariableInfo->variable_file_name);
             $q->bindParam(':variable_lang', $VariableInfo->variable_lang);
-            $q->bindParam(':variable_depth_serialized', $VariableInfo->variable_depth_serialized);
+            $q->bindParam(':variable_depth_serialized', serialize((array)($VariableInfo->variable_depth)));
             
             $result = $q->execute();
-            //var_dump($q->fetchColumn(0)); die();
+            
             return (bool)($q->fetchColumn(0));
             
         }
@@ -872,18 +815,7 @@ namespace SugarTranslations\Classes {
                     ,':comment' => 'Created by PHP script (' . __FILE__ . ', line:' . __LINE__ . ') at ' . date('Y-m-d H:i:s')
                     ,':encoding' => 'utf8_unicode_ci'
                 ));
-                
-                
-                /*
-                $pdo_dbh->query($pdo_dbh->quote($q));
-
-                $pdo_dbh->quote()
-                ' . ($table_name) . '*/
-                // echo queries?
-                //if(($echo_queries) && ($result)) {
-                //    echo $pdo_dbh->quote($q) . "\n<br />";
-                //}
-                
+                                
             } catch (\PDOException $e) {
                 print "Error!: " . $e->getMessage() . "\n<br/>";
                 die();
